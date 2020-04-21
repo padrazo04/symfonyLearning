@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ '/css/fichero.css' }}">
+{% endblock %}
+
+{% block body %}
+    <h1>Welcome to {{ post.title }}</h1>
+    <img src="{{ '/uploads/' ~ post.image }}" alt="">
+{% endblock %}
