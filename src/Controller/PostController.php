@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
+use App\Services\FileUploader;
+use App\Services\Notification;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +37,7 @@ class PostController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function createHardCoded(Request $request)
+    public function createHardCoded()
     {
         $post = new Post();
 
@@ -53,9 +55,10 @@ class PostController extends AbstractController
     /**
      * @Route("/create", name="create")
      * @param Request $request
+     * @param FileUploader $fileUploader
      * @return Response
      */
-    public function create(Request $request)
+    public function create(Request $request, FileUploader $fileUploader, Notification $notification)
     {
         $post = new Post();
 
@@ -68,11 +71,8 @@ class PostController extends AbstractController
             /** @var UploadedFile $file */
             $file = $request->files->get('post')['attachment'];
             if($file) {
-                $filename = md5(uniqid()) . '.' . $file->guessClientExtension();
-                $file->move(
-                    $this->getParameter('uploads_dir'),
-                    $filename
-                );
+                $filename = $fileUploader->uploadFile($file);
+
                 $post->setImage($filename);
                 $em->persist($post);
                 $em->flush();
@@ -125,6 +125,20 @@ class PostController extends AbstractController
     {
         return $this->render('post/show.html.twig', [
            'post' => $post
+        ]);
+    }
+
+    /**
+     * @Route("/show3/{id}", name="show3")
+     * @param Post
+     * CUSTOM QUERY
+     */
+    public function show3($id, PostRepository $postRepository)
+    {
+        $post = $postRepository->findPostWithCategory($id);
+
+        return $this->render('post/show.html.twig', [
+            'post' => $post
         ]);
     }
 }

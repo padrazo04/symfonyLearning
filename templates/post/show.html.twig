@@ -6,5 +6,8 @@
 
 {% block body %}
     <h1>Welcome to {{ post.title }}</h1>
+    <em>{{ post.category }}</em>
+    <em>{{ post.category.id }}</em>
+    <hr />
     <img src="{{ '/uploads/' ~ post.image }}" alt="">
 {% endblock %}
